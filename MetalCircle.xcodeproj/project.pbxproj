@@ -12,6 +12,7 @@
 		EFFEF08E29D9F9ED00B39499 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EFFEF08D29D9F9ED00B39499 /* Assets.xcassets */; };
 		EFFEF09129D9F9ED00B39499 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EFFEF09029D9F9ED00B39499 /* Preview Assets.xcassets */; };
 		EFFEF09829D9FA2700B39499 /* MetalCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFEF09729D9FA2700B39499 /* MetalCircleView.swift */; };
+		EFFEF09D29DA175200B39499 /* CircleShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = EFFEF09C29DA175200B39499 /* CircleShaders.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,8 @@
 		EFFEF08D29D9F9ED00B39499 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EFFEF09029D9F9ED00B39499 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EFFEF09729D9FA2700B39499 /* MetalCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalCircleView.swift; sourceTree = "<group>"; };
+		EFFEF09C29DA175200B39499 /* CircleShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CircleShaders.metal; sourceTree = "<group>"; };
+		EFFEF09E29DA199F00B39499 /* definitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = definitions.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,8 @@
 				EFFEF08B29D9F9EC00B39499 /* ContentView.swift */,
 				EFFEF08D29D9F9ED00B39499 /* Assets.xcassets */,
 				EFFEF08F29D9F9ED00B39499 /* Preview Content */,
+				EFFEF09C29DA175200B39499 /* CircleShaders.metal */,
+				EFFEF09E29DA199F00B39499 /* definitions.h */,
 			);
 			path = MetalCircle;
 			sourceTree = "<group>";
@@ -140,6 +145,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFFEF09D29DA175200B39499 /* CircleShaders.metal in Sources */,
 				EFFEF09829D9FA2700B39499 /* MetalCircleView.swift in Sources */,
 				EFFEF08C29D9F9EC00B39499 /* ContentView.swift in Sources */,
 				EFFEF08A29D9F9EC00B39499 /* MetalCircleApp.swift in Sources */,
@@ -284,9 +290,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				PRODUCT_BUNDLE_IDENTIFIER = learningswift.MetalCircle;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = MetalCircle/definitions.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -313,9 +321,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				PRODUCT_BUNDLE_IDENTIFIER = learningswift.MetalCircle;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = MetalCircle/definitions.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
