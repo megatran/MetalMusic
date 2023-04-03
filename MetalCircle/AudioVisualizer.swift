@@ -6,6 +6,7 @@
 //
 
 import MetalKit
+import AVFoundation
 
 class AudioVisualizer: NSObject, MTKViewDelegate {
     var parent: ContentView
@@ -20,6 +21,11 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
 
     private var metalRenderPipelineState : MTLRenderPipelineState!
 
+    
+    /**
+        Audio procesing references
+     **/
+    var engine: AVAudioEngine!
     
     init (_ parent: ContentView, mtkView: MTKView) {
         self.parent = parent
@@ -37,6 +43,11 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
         
         // takes “length” number of bytes from our circleVertices and stores it into GPU/CPU accessible memory.
         vertexBuffer = metalDevice.makeBuffer(bytes: circleVertices, length: circleVertices.count * MemoryLayout<simd_float2>.stride, options:[])!
+        
+        /*
+            Setup audio processing in our view
+         */
+        self.setupAudio() 
     }
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
@@ -131,6 +142,52 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
         
         // make the pipeline state use the GPU interface and the pipeline descriptor
         metalRenderPipelineState = try! metalDevice.makeRenderPipelineState(descriptor: pipelineDescriptor)
+        
+    }
+    
+    func setupAudio() {
+        engine = AVAudioEngine()
+        
+        //initialzing the mainMixerNode singleton which will connect to the default output node
+        _ = engine.mainMixerNode
+        
+        //prepare and start
+        engine.prepare()
+        do {
+            try engine.start()
+        } catch {
+            print(error)
+        }
+        
+        // Add a player node (our music) to the engine
+        guard let url = Bundle.main.url(forResource: "breath_of_life_by_florence_and_the_machine", withExtension: "mp3") else {
+            print("mp3 not found")
+            return
+        }
+        
+        let player = AVAudioPlayerNode()
+        
+        do {
+            let audioFile = try AVAudioFile(forReading: url)
+            let format = audioFile.processingFormat
+            
+            /**
+             Recall that the mainMixerNode connects to the default outputNode
+             We need to "attach" our node to the engine before connecting it
+             to the mainMixerNode.
+             */
+            engine.attach(player)
+            engine.connect(player, to: engine.mainMixerNode, format: format)
+            
+            // Let's play the file
+            player.scheduleFile(audioFile, at: nil, completionHandler: nil)
+        } catch {
+            print(error.localizedDescription)
+        }
+        
+        // Start playing the music
+        player.play()
+        
         
     }
 }
