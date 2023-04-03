@@ -13,6 +13,8 @@
 		EFFEF09129D9F9ED00B39499 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EFFEF09029D9F9ED00B39499 /* Preview Assets.xcassets */; };
 		EFFEF09829D9FA2700B39499 /* MetalCircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFEF09729D9FA2700B39499 /* MetalCircleView.swift */; };
 		EFFEF09D29DA175200B39499 /* CircleShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = EFFEF09C29DA175200B39499 /* CircleShaders.metal */; };
+		EFFEF0A029DB87F800B39499 /* AudioVisualizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFEF09F29DB87F800B39499 /* AudioVisualizer.swift */; };
+		EFFEF0A229DB891300B39499 /* breath_of_life_by_florence_and_the_machine.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = EFFEF0A129DB891200B39499 /* breath_of_life_by_florence_and_the_machine.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		EFFEF09729D9FA2700B39499 /* MetalCircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalCircleView.swift; sourceTree = "<group>"; };
 		EFFEF09C29DA175200B39499 /* CircleShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CircleShaders.metal; sourceTree = "<group>"; };
 		EFFEF09E29DA199F00B39499 /* definitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = definitions.h; sourceTree = "<group>"; };
+		EFFEF09F29DB87F800B39499 /* AudioVisualizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioVisualizer.swift; sourceTree = "<group>"; };
+		EFFEF0A129DB891200B39499 /* breath_of_life_by_florence_and_the_machine.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = breath_of_life_by_florence_and_the_machine.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,8 +60,10 @@
 		EFFEF08829D9F9EC00B39499 /* MetalCircle */ = {
 			isa = PBXGroup;
 			children = (
+				EFFEF0A129DB891200B39499 /* breath_of_life_by_florence_and_the_machine.mp3 */,
 				EFFEF08929D9F9EC00B39499 /* MetalCircleApp.swift */,
 				EFFEF09729D9FA2700B39499 /* MetalCircleView.swift */,
+				EFFEF09F29DB87F800B39499 /* AudioVisualizer.swift */,
 				EFFEF08B29D9F9EC00B39499 /* ContentView.swift */,
 				EFFEF08D29D9F9ED00B39499 /* Assets.xcassets */,
 				EFFEF08F29D9F9ED00B39499 /* Preview Content */,
@@ -135,6 +141,7 @@
 			files = (
 				EFFEF09129D9F9ED00B39499 /* Preview Assets.xcassets in Resources */,
 				EFFEF08E29D9F9ED00B39499 /* Assets.xcassets in Resources */,
+				EFFEF0A229DB891300B39499 /* breath_of_life_by_florence_and_the_machine.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,6 +156,7 @@
 				EFFEF09829D9FA2700B39499 /* MetalCircleView.swift in Sources */,
 				EFFEF08C29D9F9EC00B39499 /* ContentView.swift in Sources */,
 				EFFEF08A29D9F9EC00B39499 /* MetalCircleApp.swift in Sources */,
+				EFFEF0A029DB87F800B39499 /* AudioVisualizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

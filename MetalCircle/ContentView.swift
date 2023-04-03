@@ -16,7 +16,7 @@ import MetalKit
  */
 struct ContentView: UIViewRepresentable {
     
-    func makeCoordinator() -> MetalCircleView {
+    func makeCoordinator() -> AudioVisualizer {
         /**
          This function is responsible for creating a coordinator object,
          which is used to manage the communication between our SwiftUI view and the UIKit view.
@@ -29,10 +29,10 @@ struct ContentView: UIViewRepresentable {
          Delegate is a design pattern in which an object "delegates"
          some of its responsibilities to another object. In this case,
          the 'MTKView' delegates its drawing responsibility to our
-         `MetalCircleView` instance (the coordinator).
+         `AudioVisualizer` instance (the coordinator).
          By setting `mtkView.delegate = context.coordinator`,
          we're telling the `MTKView`to call the drawing methods on our
-         `MetalCircleView` instance.
+         `AudioVisualizer` instance.
          */
         mtkView.preferredFramesPerSecond = 60
         /**
@@ -56,7 +56,7 @@ struct ContentView: UIViewRepresentable {
         mtkView.framebufferOnly = false
         mtkView.drawableSize = mtkView.frame.size
         
-        let coordinator = MetalCircleView(self, mtkView: mtkView)
+        let coordinator = AudioVisualizer(self, mtkView: mtkView)
         mtkView.delegate = coordinator
         
         return coordinator
@@ -67,7 +67,7 @@ struct ContentView: UIViewRepresentable {
          This function creates an MTKView instance that will be used for Metal Rendering
          Context is a reference to the coordinator created in `makeCoordinator()`
          The `context.coordinator` is used to access our custom coordinate
-         (the instance `MetalCircleView`
+         (the instance `AudioVisualizer`
          */
 
         return context.coordinator.mtkview
