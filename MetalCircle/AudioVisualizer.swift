@@ -7,6 +7,7 @@
 
 import MetalKit
 import AVFoundation
+import Accelerate
 
 class AudioVisualizer: NSObject, MTKViewDelegate {
     var parent: ContentView
@@ -26,6 +27,10 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
         Audio procesing references
      **/
     var engine: AVAudioEngine!
+    var prevRMSValue : Float = 0.3
+    //fft setup object for 1024 values going forward (time domain -> frequency domain)
+    let fftSetup = vDSP_DFT_zop_CreateSetup(nil, 1024, vDSP_DFT_Direction.FORWARD)
+
     
     init (_ parent: ContentView, mtkView: MTKView) {
         self.parent = parent
@@ -179,16 +184,60 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
             engine.attach(player)
             engine.connect(player, to: engine.mainMixerNode, format: format)
             
+            /**
+             Format  <AVAudioFormat 0x600002fc6710:  2 ch,  48000 Hz, Float32, deinterleaved>
+             The audio was sampled at 48000 Hz and the amplitude of hte audio frames is represented by a 32-bit float
+             The last property  interleaving refers to the way audio data is stored in memory.
+             For example, in a stereo audio buffer with 16 samples, the first sample in the buffer is the first sample from the left channel, the second sample is the first sample from the right channel, the third sample is the second sample from the left channel, etc.
+             L1 R1 L2 R2 L3 R3 L4 R4 L5 R5 L6 R6 L7 R7 L8 R8
+
+             On the other hand, deinterleaved audio data means that each channel is stored in a separate buffer. So, in our stereo audio example, instead of having a single buffer with 16 samples, you would have two separate buffers, one for the left channel with 8 samples and one for the right channel with 8 samples.
+             Deinterleaved stereo audio buffer with 8 samples each:
+
+             Left channel buffer:
+             L1 L2 L3 L4 L5 L6 L7 L8
+
+             Right channel buffer:
+             R1 R2 R3 R4 R5 R6 R7 R8
+             */
+            // print("Format ", format)
+
             // Let's play the file
             player.scheduleFile(audioFile, at: nil, completionHandler: nil)
         } catch {
             print(error.localizedDescription)
         }
         
+        /**
+         Tap it to get the buffer data at playtime
+         Installs an audio tap on the bus to record, monitor, and observe the output of the node.
+         - onBus — describes which output bus you want to fetch the data from
+         - bufferSize — describes the number of bytes you want back from the audio data.
+         - format — nil for our purposes, it will figure it out itself
+         - block — this is the data passed in the callback consisting of an AVAudioPCMBuffer and AVAudioTime (time the track is at)
+                    The tapBlock may be invoked on a thread other than the main thread.
+         */
+        engine.mainMixerNode.installTap(onBus: 0, bufferSize: 1024, format: nil) {
+            (buffer, time) in
+        }
         // Start playing the music
         player.play()
-        
-        
     }
+    
+    func processAudioData(buffer: AVAudioPCMBuffer) {
+        guard let channelData = buffer.floatChannelData?[0] else {return}
+        let frames = buffer.frameLength
+        
+        let rmsValue = SignalProcessing.RootMeanSquare(data: channelData, frameLength: UInt(frames))
+        
+        let interpolatedResults = SignalProcessing.linearInterpolate(current: rmsValue, previous: prevRMSValue)
+        prevRMSValue = rmsValue
+        
+        //fft
+        let fftMagnitudes =  SignalProcessing.fft(data: channelData, setup: fftSetup!)
+    }
+    
+
+
 }
 
