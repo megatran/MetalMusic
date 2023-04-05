@@ -8,7 +8,8 @@ This app in this branch (`nhan/audio_part2`) can analyze a song's `loudness` and
 
 
 ### Video (click on the Speaker icon to unmute)
-https://user-images.githubusercontent.com/10265967/229953929-269b6c20-70d7-4c47-a321-16075543f088.mov
+
+https://user-images.githubusercontent.com/10265967/229957128-e144787a-14ff-49b1-9f2d-a5f1d21af072.mov
 
 
 
