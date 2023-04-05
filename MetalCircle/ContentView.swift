@@ -47,8 +47,13 @@ struct ContentView: UIViewRepresentable {
          3. When we're synchrononizing our rendering with other proceses/events in our app
          and we need to ensure that rendering only occurs at specific moments.
          */
-        mtkView.enableSetNeedsDisplay = true
+        //mtkView.enableSetNeedsDisplay = true
         
+        //updates
+        mtkView.isPaused = true
+        mtkView.enableSetNeedsDisplay = false
+        
+        // connect to GPU
         if let metalDevice = MTLCreateSystemDefaultDevice()
         {
             mtkView.device = metalDevice

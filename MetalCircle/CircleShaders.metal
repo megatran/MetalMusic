@@ -32,13 +32,39 @@ struct VertexOut {
  */
  vertex VertexOut vertexShader(unsigned int vid [[vertex_id]],
                                const constant vector_float2 *vertexArray [[buffer(0)]],
-                               constant float &aspectRatio [[buffer(1)]]) {
-     vector_float2 current_vertex = vertexArray[vid];
+                               const constant float *loudnessUniform [[buffer(1)]],
+                               const constant float *lineArray [[buffer(2)]],
+                               constant float &aspectRatio [[buffer(3)]]) {
+     
+     // index the loudnessUniform array at zero because there is only one element in it
+     float circleScaler = loudnessUniform[0];
+     
      VertexOut output;
+     if (vid < 1081) {
+         // circle
+         vector_float2 currentVertex = vertexArray[vid]; //fetch the current vertex we're on using the vid to index into our buffer data which holds all of our vertex points that we passed in
+         output.position = vector_float4(currentVertex.x*circleScaler, currentVertex.y*circleScaler, 0, 1); //populate the output position with the x and y values of our input vertex data
+        output.color =  vector_float4(0,0,0,1);//set the color
+        //output.color =  vector_float4(1,1,1,1);
+     } else {
+         // frequency line
+         int circleId = vid-1081;
+         vector_float2 circleVertex;
 
-     output.position = vector_float4(current_vertex.x, current_vertex.y, 0, 1);
-     output.position.y *= aspectRatio; // Apply the aspect ratio to the x-coordinate
-     output.color = vector_float4(1,1,1,1);
+         if(circleId%3 == 0){
+             //place line vertex off circle
+             circleVertex = vertexArray[circleId];
+             float lineScale = 1 + lineArray[(vid-1081)/3];
+             output.position = vector_float4(circleVertex.x*circleScaler*lineScale, circleVertex.y*circleScaler*lineScale, 0, 1);
+             output.color = vector_float4(0,0,1,1);
+         } else {
+             //place line vertex on circle
+             circleVertex = vertexArray[circleId-1];
+             output.position = vector_float4(circleVertex.x*circleScaler, circleVertex.y*circleScaler, 0, 1);
+             output.color = vector_float4(1,0,0,1);
+         }
+     }
+     output.position.y *= aspectRatio; // Apply the aspect ratio to the y-coordinate
      return output;
  }
 
@@ -50,25 +76,3 @@ struct VertexOut {
 fragment vector_float4 fragmentShader(VertexOut interpolated [[stage_in]]) {
     return interpolated.color;
 }
-
-
-//struct Fragment {
-//    float4 position [[position]];
-//    float4 color;
-//};
-//
-//vertex Fragment vertexShader(const constant Vertex *vertexArray [[buffer(0)]],
-//    unsigned int vid [[vertex_id]]) {
-//    Vertex input = vertexArray[vid];
-//    Fragment output;
-//
-//    output.position = float4(input.position.x, input.position.y, 0, 1);
-//    output.color = input.color;
-//    return output;
-//}
-//
-//fragment float4 fragmentShader(Fragment interpolated [[stage_in]]) {
-//    return interpolated.color;
-//}
-
-

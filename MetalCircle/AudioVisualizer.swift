@@ -15,10 +15,36 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
     var metalDevice: MTLDevice!
     var metalCommandQueue: MTLCommandQueue!
     
-    // Vertices of the circle
+   /**
+    Vertices of the circle
+    SIMD library is to ensure the data is being represented consistently in memory across the CPU and the GPU as the library exists for both Swift and Metal.
+    **/
     var circleVertices = [simd_float2]()
     private var vertexBuffer : MTLBuffer!
+    
+    
+    // In shader, a uniform variable is a constant value that is applied to all vertices uniformly
+    private var loudnessUniformBuffer: MTLBuffer!
+    public var loudnessMagnitude: Float = 0.3 {
+        /*
+         When the value of the loudnessMagnitude property is changed, the didSet observer is triggered and it updates the loudnessUniformBuffer buffer with the new value of loudnessMagnitude.
+         */
+        didSet {
+            loudnessUniformBuffer = metalDevice.makeBuffer(bytes: &loudnessMagnitude, length: MemoryLayout<Float>.stride, options: [])!
+            mtkview.draw()
+        }
+    }
+    
+    private var frequencyBuffer: MTLBuffer!
+    public var frequencyVertices: [Float]  = [Float](repeating: 0, count: 361) {
+        didSet {
+            let sliced = Array(frequencyVertices[76..<438])
+            frequencyBuffer = metalDevice.makeBuffer(bytes: sliced, length: sliced.count * MemoryLayout<Float>.stride, options: [])!
+                mtkview.draw()
+        }
+    }
 
+    private var aspectRatio: Float = 1.0
 
     private var metalRenderPipelineState : MTLRenderPipelineState!
 
@@ -49,6 +75,13 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
         // takes “length” number of bytes from our circleVertices and stores it into GPU/CPU accessible memory.
         vertexBuffer = metalDevice.makeBuffer(bytes: circleVertices, length: circleVertices.count * MemoryLayout<simd_float2>.stride, options:[])!
         
+        loudnessUniformBuffer = metalDevice.makeBuffer(bytes: &loudnessMagnitude, length: MemoryLayout<Float>.stride, options: [])!
+        
+        frequencyBuffer = metalDevice.makeBuffer(bytes: frequencyVertices, length: frequencyVertices.count * MemoryLayout<Float>.stride, options: [])!
+        
+        // TODO(nhan): investigate whether we need this
+        // mtkview.setNeedsDisplay()
+        mtkview.draw()
         /*
             Setup audio processing in our view
          */
@@ -70,7 +103,7 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
         // Create the interface for the pipeline
         guard let renderDescriptor = view.currentRenderPassDescriptor else {return}
         // Setting a background color
-        renderDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0,0,1,1)
+        renderDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0,0,0,1)
         
         // Creating the command encoder, or the "inside" of the pipeline
         guard let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderDescriptor)
@@ -80,16 +113,24 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
         renderEncoder.setRenderPipelineState(metalRenderPipelineState)
         
         /*********** Encoding the commands **************/
+        
+        // Match the [[buffer(index 0)]]  attribute in the vertex shader
+        renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        
+        renderEncoder.setVertexBuffer(loudnessUniformBuffer, offset: 0, index: 1)
+        
+        renderEncoder.setVertexBuffer(frequencyBuffer, offset: 0, index: 2)
+        
         // ensure that the x,y coordinates of the vertices are scaled proportionally with
         // respect to the window or screensize
         // passing this value into our shader entures that the circle maintains
         // its shape and doesn't get stretched when the window size changes.
-        var aspectRatio = Float(view.drawableSize.width / view.drawableSize.height)
         renderEncoder.setVertexBytes(&aspectRatio, length: MemoryLayout<Float>.size, index: 1)
-
         
-        // Match the [[buffer(index 0)]]  attribute in the vertex shader
-        renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        aspectRatio = Float(view.drawableSize.width / view.drawableSize.height)
+
+        renderEncoder.setVertexBytes(&aspectRatio, length: MemoryLayout<Float>.stride, index: 3)
+        
         
         /*
          You may be wondering why we need to specify vertexStart point and vertexCount point. This is needed when you want to create different primitive types in the same render pass. If your first 1000 vertexes are for triangles and the next 1000 are for lines, you will want to specify from what vertex does the next primitive type start.
@@ -99,8 +140,12 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
          Diff
             - triangle — rasterizes a triangle for every separate triplet of points
             - triangleStrip — rasterizes a triangle for every three adjacent triplet of points
+         
+         The drawPrimitives called with a vertexCount of 1081, which triggers the vertex function in our shader to run 1081 times with a vertex_id(vid) from 0 to 1080.
          */
         renderEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 1081)
+        
+        renderEncoder.drawPrimitives(type: .lineStrip, vertexStart: 1081, vertexCount: 1081)
         renderEncoder.endEncoding()
         
         // Tell the GPU where to send the rendered result.
@@ -205,7 +250,7 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
             // Let's play the file
             player.scheduleFile(audioFile, at: nil, completionHandler: nil)
         } catch {
-            print(error.localizedDescription)
+            print("ERROR: ", error.localizedDescription)
         }
         
         /**
@@ -217,8 +262,11 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
          - block — this is the data passed in the callback consisting of an AVAudioPCMBuffer and AVAudioTime (time the track is at)
                     The tapBlock may be invoked on a thread other than the main thread.
          */
-        engine.mainMixerNode.installTap(onBus: 0, bufferSize: 1024, format: nil) {
-            (buffer, time) in
+         // TODO(nhan): there's a known bug in here... the buffer size might not be correct
+         // I'm setting it to 9000 so that the song doesn't end too soon...
+         // Sometimes when the app is running, the audio becomes choppy then returns to normal...
+        engine.mainMixerNode.installTap(onBus: 0, bufferSize: 9000, format: nil) { (buffer, time) in
+            self.processAudioData(buffer: buffer)
         }
         // Start playing the music
         player.play()
@@ -227,17 +275,23 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
     func processAudioData(buffer: AVAudioPCMBuffer) {
         guard let channelData = buffer.floatChannelData?[0] else {return}
         let frames = buffer.frameLength
+        print("frameLength: ", frames)
         
         let rmsValue = SignalProcessing.RootMeanSquare(data: channelData, frameLength: UInt(frames))
         
+        print("RMS: ", rmsValue)
+
         let interpolatedResults = SignalProcessing.linearInterpolate(current: rmsValue, previous: prevRMSValue)
         prevRMSValue = rmsValue
         
+        // Pass values for rendering
+        for rms in interpolatedResults {
+            self.loudnessMagnitude = rms
+        }
+        
         //fft
         let fftMagnitudes =  SignalProcessing.fft(data: channelData, setup: fftSetup!)
+        frequencyVertices = fftMagnitudes
     }
-    
-
-
 }
 
