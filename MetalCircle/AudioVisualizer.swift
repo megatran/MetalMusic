@@ -80,7 +80,7 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
         frequencyBuffer = metalDevice.makeBuffer(bytes: frequencyVertices, length: frequencyVertices.count * MemoryLayout<Float>.stride, options: [])!
         
         // TODO(nhan): investigate whether we need this
-        // mtkview.setNeedsDisplay()
+        //mtkview.setNeedsDisplay()
         mtkview.draw()
         /*
             Setup audio processing in our view
@@ -125,11 +125,9 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
         // respect to the window or screensize
         // passing this value into our shader entures that the circle maintains
         // its shape and doesn't get stretched when the window size changes.
-        renderEncoder.setVertexBytes(&aspectRatio, length: MemoryLayout<Float>.size, index: 1)
-        
         aspectRatio = Float(view.drawableSize.width / view.drawableSize.height)
-
         renderEncoder.setVertexBytes(&aspectRatio, length: MemoryLayout<Float>.stride, index: 3)
+
         
         
         /*
@@ -286,7 +284,7 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
         
         // Pass values for rendering
         for rms in interpolatedResults {
-            self.loudnessMagnitude = rms
+            loudnessMagnitude = rms
         }
         
         //fft
