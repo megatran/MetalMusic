@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF584C5529FEFBAB00CFD564 /* SphereDeformableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF584C5429FEFBAB00CFD564 /* SphereDeformableView.swift */; };
+		EF584C5729FF000300CFD564 /* AudioVisualizerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF584C5629FF000300CFD564 /* AudioVisualizerView.swift */; };
+		EF584C5929FF077400CFD564 /* AudioAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF584C5829FF077400CFD564 /* AudioAnalyzer.swift */; };
+		EF584C6329FF3A7B00CFD564 /* PerlinNoise.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF584C6229FF3A7B00CFD564 /* PerlinNoise.swift */; };
+		EF584C6529FF3DAD00CFD564 /* ImageCreation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF584C6429FF3DAD00CFD564 /* ImageCreation.swift */; };
 		EFFEF08A29D9F9EC00B39499 /* MetalCircleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFEF08929D9F9EC00B39499 /* MetalCircleApp.swift */; };
 		EFFEF08C29D9F9EC00B39499 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFEF08B29D9F9EC00B39499 /* ContentView.swift */; };
 		EFFEF08E29D9F9ED00B39499 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EFFEF08D29D9F9ED00B39499 /* Assets.xcassets */; };
@@ -19,6 +24,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EF584C5429FEFBAB00CFD564 /* SphereDeformableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SphereDeformableView.swift; sourceTree = "<group>"; };
+		EF584C5629FF000300CFD564 /* AudioVisualizerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioVisualizerView.swift; sourceTree = "<group>"; };
+		EF584C5829FF077400CFD564 /* AudioAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioAnalyzer.swift; sourceTree = "<group>"; };
+		EF584C6229FF3A7B00CFD564 /* PerlinNoise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerlinNoise.swift; sourceTree = "<group>"; };
+		EF584C6429FF3DAD00CFD564 /* ImageCreation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCreation.swift; sourceTree = "<group>"; };
 		EFFEF08629D9F9EC00B39499 /* MetalCircle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalCircle.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFFEF08929D9F9EC00B39499 /* MetalCircleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalCircleApp.swift; sourceTree = "<group>"; };
 		EFFEF08B29D9F9EC00B39499 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -43,6 +53,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EF584C6629FF4E2500CFD564 /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				EFFEF09729D9FA2700B39499 /* MetalCircleView.swift */,
+			);
+			path = Deprecated;
+			sourceTree = "<group>";
+		};
+		EF584C6729FF4E3D00CFD564 /* Noise */ = {
+			isa = PBXGroup;
+			children = (
+				EF584C6429FF3DAD00CFD564 /* ImageCreation.swift */,
+				EF584C6229FF3A7B00CFD564 /* PerlinNoise.swift */,
+			);
+			path = Noise;
+			sourceTree = "<group>";
+		};
 		EFFEF07D29D9F9EC00B39499 = {
 			isa = PBXGroup;
 			children = (
@@ -62,12 +89,16 @@
 		EFFEF08829D9F9EC00B39499 /* MetalCircle */ = {
 			isa = PBXGroup;
 			children = (
+				EF584C6729FF4E3D00CFD564 /* Noise */,
+				EF584C6629FF4E2500CFD564 /* Deprecated */,
 				EFFEF0A129DB891200B39499 /* breath_of_life_by_florence_and_the_machine.mp3 */,
-				EFFEF08929D9F9EC00B39499 /* MetalCircleApp.swift */,
-				EFFEF09729D9FA2700B39499 /* MetalCircleView.swift */,
-				EFFEF0A529DBAE6D00B39499 /* SignalProcessing.swift */,
-				EFFEF09F29DB87F800B39499 /* AudioVisualizer.swift */,
 				EFFEF08B29D9F9EC00B39499 /* ContentView.swift */,
+				EF584C5429FEFBAB00CFD564 /* SphereDeformableView.swift */,
+				EF584C5629FF000300CFD564 /* AudioVisualizerView.swift */,
+				EFFEF09F29DB87F800B39499 /* AudioVisualizer.swift */,
+				EF584C5829FF077400CFD564 /* AudioAnalyzer.swift */,
+				EFFEF08929D9F9EC00B39499 /* MetalCircleApp.swift */,
+				EFFEF0A529DBAE6D00B39499 /* SignalProcessing.swift */,
 				EFFEF08D29D9F9ED00B39499 /* Assets.xcassets */,
 				EFFEF08F29D9F9ED00B39499 /* Preview Content */,
 				EFFEF09C29DA175200B39499 /* CircleShaders.metal */,
@@ -157,10 +188,15 @@
 			files = (
 				EFFEF09D29DA175200B39499 /* CircleShaders.metal in Sources */,
 				EFFEF09829D9FA2700B39499 /* MetalCircleView.swift in Sources */,
+				EF584C6329FF3A7B00CFD564 /* PerlinNoise.swift in Sources */,
 				EFFEF0A629DBAE6D00B39499 /* SignalProcessing.swift in Sources */,
 				EFFEF08C29D9F9EC00B39499 /* ContentView.swift in Sources */,
+				EF584C5929FF077400CFD564 /* AudioAnalyzer.swift in Sources */,
+				EF584C6529FF3DAD00CFD564 /* ImageCreation.swift in Sources */,
 				EFFEF08A29D9F9EC00B39499 /* MetalCircleApp.swift in Sources */,
 				EFFEF0A029DB87F800B39499 /* AudioVisualizer.swift in Sources */,
+				EF584C5529FEFBAB00CFD564 /* SphereDeformableView.swift in Sources */,
+				EF584C5729FF000300CFD564 /* AudioVisualizerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

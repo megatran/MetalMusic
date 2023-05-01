@@ -10,11 +10,12 @@ import AVFoundation
 import Accelerate
 
 class AudioVisualizer: NSObject, MTKViewDelegate {
-    var parent: ContentView
     var mtkview: MTKView
     var metalDevice: MTLDevice!
     var metalCommandQueue: MTLCommandQueue!
     
+    var player: AVAudioPlayerNode!
+
    /**
     Vertices of the circle
     SIMD library is to ensure the data is being represented consistently in memory across the CPU and the GPU as the library exists for both Swift and Metal.
@@ -58,8 +59,7 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
     let fftSetup = vDSP_DFT_zop_CreateSetup(nil, 1024, vDSP_DFT_Direction.FORWARD)
 
     
-    init (_ parent: ContentView, mtkView: MTKView) {
-        self.parent = parent
+    init (mtkView: MTKView) {
         self.mtkview = mtkView
         self.metalDevice = mtkview.device
 
@@ -213,7 +213,7 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
             return
         }
         
-        let player = AVAudioPlayerNode()
+        player = AVAudioPlayerNode()
         
         do {
             let audioFile = try AVAudioFile(forReading: url)
@@ -263,7 +263,7 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
          // TODO(nhan): there's a known bug in here... the buffer size might not be correct
          // I'm setting it to 9000 so that the song doesn't end too soon...
          // Sometimes when the app is running, the audio becomes choppy then returns to normal...
-        engine.mainMixerNode.installTap(onBus: 0, bufferSize: 9000, format: nil) { (buffer, time) in
+        engine.mainMixerNode.installTap(onBus: 0, bufferSize: 10000, format: nil) { (buffer, time) in
             self.processAudioData(buffer: buffer)
         }
         // Start playing the music
@@ -290,6 +290,18 @@ class AudioVisualizer: NSObject, MTKViewDelegate {
         //fft
         let fftMagnitudes =  SignalProcessing.fft(data: channelData, setup: fftSetup!)
         frequencyVertices = fftMagnitudes
+    }
+    
+    func startAudio() {
+        setupAudio()
+    }
+    
+    func stopAudio() {
+        guard let player = self.player else { return }
+        player.stop()
+        engine.detach(player)
+        engine.mainMixerNode.removeTap(onBus: 0)
+        engine.stop()
     }
 }
 
